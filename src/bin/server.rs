@@ -13,6 +13,7 @@ use juniper_axum::{graphiql, graphql, playground, ws};
 use juniper_graphql_ws::ConnectionConfig;
 use tokio::{net::TcpListener, time::interval};
 use tokio_stream::wrappers::IntervalStream;
+use tracing::{debug, info};
 
 #[derive(Clone, Copy, Debug)]
 pub struct Query;
@@ -34,8 +35,10 @@ type NumberStream = BoxStream<'static, Result<i32, FieldError>>;
 impl Subscription {
     /// Counts seconds.
     async fn count() -> NumberStream {
+        info!("Starting count");
         let mut value = 0;
         let stream = IntervalStream::new(interval(Duration::from_secs(1))).map(move |_| {
+            info!("Increasing count");
             value += 1;
             Ok(value)
         });
@@ -80,7 +83,7 @@ async fn main() {
         .route("/", get(homepage))
         .layer(Extension(Arc::new(schema)));
 
-    let addr = SocketAddr::from(([127, 0, 0, 1], 8080));
+    let addr = SocketAddr::from(([0,0,0,0], 8080));
     let listener = TcpListener::bind(addr)
         .await
         .unwrap_or_else(|e| panic!("failed to listen on {addr}: {e}"));
