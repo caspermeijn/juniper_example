@@ -1,0 +1,14 @@
+schema {
+  query: Query
+  subscription: Subscription
+}
+
+type Query {
+  "Adds two `a` and `b` numbers."
+  add(a: Int!, b: Int!): Int!
+}
+
+type Subscription {
+  "Counts seconds."
+  count: Int!
+}
